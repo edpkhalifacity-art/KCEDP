@@ -166,15 +166,4 @@
         <td><input type="text" id="editSupplier${index}" value="${item.supplier}" style="width:100%"></td>
         <td><input type="number" id="editInvoices${index}" value="${item.invoices}" style="width:100%"></td>
         <td>
-          <select id="editDept${index}" style="width:100%">
-            <option ${item.department === "GROCERY FOOD" ? "selected" : ""}>GROCERY FOOD</option>
-            <option ${item.department === "GROCERY NON-FOOD & H&B" ? "selected" : ""}>GROCERY NON-FOOD & H&B</option>
-          </select>
-        </td>
-        <td><input type="date" id="editDate${index}" value="${item.date}" style="width:100%"></td>
-        <td><button class="edit-btn" onclick="saveEntry(${index})">Save</button></td>
-      `;
-    }
-
-    function saveEntry(index) {
-      data[index].supplier = document.get
+          <select id="editDept${index}" style="width:
