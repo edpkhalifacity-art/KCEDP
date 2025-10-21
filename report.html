@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supplier Invoice Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f4f4f8;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      width: 95%;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      color: #5e35b1;
+      margin-bottom: 20px;
+    }
+    .controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .controls input, .controls button, .controls a {
+      margin: 5px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-family: inherit;
+    }
+    .controls button, .controls a {
+      background: #5e35b1;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .controls button:hover, .controls a:hover {
+      background: #4527a0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: center;
+    }
+    th {
+      background-color: #5e35b1;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f3f0fa;
+    }
+    .footer {
+      font-weight: bold;
+      background: #d1c4e9;
+    }
+    .edit-btn, .delete-btn {
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+    .edit-btn { background: #ffb300; }
+    .edit-btn:hover { background: #ffa000; }
+    .delete-btn { background: #e53935; }
+    .delete-btn:hover { background: #c62828; }
+
+    @media print {
+      .controls, .edit-btn, .delete-btn { display: none !important; }
+      body { background: white; }
+      @page { size: landscape; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Supplier Invoice Report</h2>
+
+    <div class="controls">
+      <label for="filterDate">Select Date:</label>
+      <input type="date" id="filterDate">
+      <button onclick="filterByDate()">Filter</button>
+      <button onclick="resetFilter()">Reset</button>
+      <button onclick="window.print()">🖨 Print</button>
+      <a href="form.html">➕ Add New Entry</a>
+    </div>
+
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>Supplier</th>
+          <th>Invoices</th>
+          <th>Department</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr class="footer">
+          <td colspan="1">TOTAL</td>
+          <td id="totalInvoices">0</td>
+          <td colspan="3"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <script>
+    let data = JSON.parse(localStorage.getItem("formData")) || [];
+    const tbody = document.querySelector("#dataTable tbody");
+    const totalCell = document.getElementById("totalInvoices");
+
+    function renderTable(filteredData = data) {
+      tbody.innerHTML = "";
+      let total = 0;
+
+      filteredData.forEach((item, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.supplier}</td>
+          <td>${item.invoices}</td>
+          <td>${item.department}</td>
+          <td>${item.date}</td>
+          <td>
+            <button class="edit-btn" onclick="editEntry(${index})">Edit</button>
+            <button class="delete-btn" onclick="deleteEntry(${index})">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+        total += parseInt(item.invoices);
+      });
+
+      totalCell.textContent = total;
+    }
+
+    function filterByDate() {
+      const selected = document.getElementById("filterDate").value;
+      if (!selected) return renderTable(data);
+      const filtered = data.filter(item => item.date === selected);
+      renderTable(filtered);
+    }
+
+    function resetFilter() {
+      document.getElementById("filterDate").value = "";
+      renderTable();
+    }
+
+    function editEntry(index) {
+      const item = data[index];
+      const row = tbody.rows[index];
+      row.innerHTML = `
+        <td><input type="text" id="editSupplier${index}" value="${item.supplier}" style="width:100%"></td>
+        <td><input type="number" id="editInvoices${index}" value="${item.invoices}" style="width:100%"></td>
+        <td>
+          <select id="editDept${index}" style="width:100%">
+            <option ${item.department === "GROCERY FOOD" ? "selected" : ""}>GROCERY FOOD</option>
+            <option ${item.department === "GROCERY NON-FOOD & H&B" ? "selected" : ""}>GROCERY NON-FOOD & H&B</option>
+          </select>
+        </td>
+        <td><input type="date" id="editDate${index}" value="${item.date}" style="width:100%"></td>
+        <td><button class="edit-btn" onclick="saveEntry(${index})">Save</button></td>
+      `;
+    }
+
+    function saveEntry(index) {
+      data[index].supplier = document.getElementById(`editSupplier${index}`).value;
+      data[index].invoices = document.getElementById(`editInvoices${index}`).value;
+      data[index].department = document.getElementById(`editDept${index}`).value;
+      data[index].date = document.getElementById(`editDate${index}`).value;
+      localStorage.setItem("formData", JSON.stringify(data));
+      renderTable();
+    }
+
+    function deleteEntry(index) {
+      if (confirm("Are you sure you want to delete this entry?")) {
+        data.splice(index, 1);
+        localStorage.setItem("formData", JSON.stringify(data));
+        renderTable();
+      }
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
