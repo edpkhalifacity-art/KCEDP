@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Delivery Appointment Scheduled</title>
+  <title>Delivery Schedule</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -21,9 +21,14 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       padding: 30px;
+      text-align: center;
+    }
+    img.logo {
+      width: 100px;
+      height: auto;
+      margin-bottom: 15px;
     }
     h2 {
-      text-align: center;
       color: #5e35b1;
       margin-bottom: 20px;
     }
@@ -31,6 +36,7 @@
       font-weight: 500;
       display: block;
       margin-top: 10px;
+      text-align: left;
     }
     input, select {
       width: 100%;
@@ -58,7 +64,8 @@
 </head>
 <body>
   <div class="container">
-    <h2>Delivery Appointment Scheduled</h2>
+    <img src="unnamed.webp" alt="Logo" class="logo">
+    <h2>Delivery Schedule</h2>
     <form id="invoiceForm">
       <label>Supplier Name</label>
       <input type="text" id="supplier" required>
@@ -71,8 +78,6 @@
         <option value="">Select Department</option>
         <option>GROCERY FOOD</option>
         <option>GROCERY NON-FOOD & H&B</option>
-	<option>Department Store</option>
-
       </select>
 
       <label>Date</label>
@@ -96,13 +101,7 @@
         return;
       }
 
-      const entry = {
-        supplier,
-        invoices,
-        department,
-        date
-      };
-
+      const entry = { supplier, invoices, department, date };
       let data = JSON.parse(localStorage.getItem("formData")) || [];
       data.push(entry);
       localStorage.setItem("formData", JSON.stringify(data));
@@ -112,4 +111,3 @@
   </script>
 </body>
 </html>
-
